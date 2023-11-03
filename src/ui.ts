@@ -1,6 +1,12 @@
-import { cases, dameCarta, partida } from "./motor";
+import {
+  partida,
+  generarNumeroAleatorio,
+  calcularEstado,
+  calcularPuntuacion,
+} from "./motor";
+import * as model from "./model";
 
-export function mensajeGameOver(mensaje: string) {
+export function mostrarMensaje(mensaje: string) {
   let gameOverElement = document.getElementById("gameover");
   if (gameOverElement && gameOverElement instanceof HTMLElement) {
     gameOverElement.innerHTML = mensaje;
@@ -8,14 +14,13 @@ export function mensajeGameOver(mensaje: string) {
 }
 
 export function infoPlantarse() {
-  let puntuacionPlantarse = partida.puntuacion;
   const botonCarta = document.getElementById("dameCarta");
 
   if (botonCarta && botonCarta instanceof HTMLButtonElement) {
     botonCarta.disabled = true;
   }
 
-  cases(puntuacionPlantarse);
+  mostrarMensaje(partida.mensaje);
 }
 
 export function muestraPuntuacion(): void {
@@ -23,13 +28,6 @@ export function muestraPuntuacion(): void {
 
   if (puntuacionElement && puntuacionElement instanceof HTMLElement) {
     puntuacionElement.innerHTML = partida.puntuacion.toString();
-  }
-  if (partida.puntuacion > 7.5) {
-    mensajeGameOver("Te has pasado de 7.5 puntos. Has perdido!! 😟");
-    const botonCarta = document.getElementById("dameCarta");
-    if (botonCarta && botonCarta instanceof HTMLButtonElement) {
-      botonCarta.disabled = true;
-    }
   }
 }
 
@@ -48,9 +46,7 @@ export function reiniciarPartida() {
     puntuacionElement.innerHTML = partida.puntuacion.toString();
   }
 
-  muestraLaCarta(
-    "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/back.jpg"
-  );
+  muestraLaCarta(model.back);
 
   const botonCarta = document.getElementById("dameCarta");
 
@@ -58,7 +54,7 @@ export function reiniciarPartida() {
     botonCarta.disabled = false;
   }
 
-  mensajeGameOver("");
+  mostrarMensaje(model.mensajeVacio);
 }
 
 //BOTONES:
@@ -77,67 +73,65 @@ if (botonReiniciar && botonReiniciar instanceof HTMLButtonElement) {
   botonReiniciar.addEventListener("click", reiniciarPartida);
 }
 
-export function rawImages(numeroRandom: number) {
+export function disableBotonCarta() {
+  const botonCarta = document.getElementById("dameCarta");
+  if (botonCarta && botonCarta instanceof HTMLButtonElement) {
+    botonCarta.disabled = true;
+  }
+}
+
+////////////////
+
+export function dameCarta(): void {
+  let numeroAleatorio = generarNumeroAleatorio();
+
+  partida.numeroActual = numeroAleatorio;
+
+  calcularPuntuacion(numeroAleatorio);
+  mostrarCarta(numeroAleatorio);
+  muestraPuntuacion();
+  calcularEstado();
+  comprobarEstado();
+}
+
+export function comprobarEstado() {
+  if (partida.estado === model.Estado.GAMEOVER) {
+    mostrarMensaje(model.perdedor);
+    disableBotonCarta();
+  }
+}
+
+export function mostrarCarta(numeroRandom: number) {
   switch (numeroRandom) {
     case 1:
-      muestraLaCarta(
-        "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/1_as-copas.jpg"
-      );
-      partida.puntuacion++;
+      muestraLaCarta(model.as);
       break;
     case 2:
-      muestraLaCarta(
-        "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/2_dos-copas.jpg"
-      );
-      partida.puntuacion = partida.puntuacion + 2;
+      muestraLaCarta(model.dos);
       break;
     case 3:
-      muestraLaCarta(
-        "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/3_tres-copas.jpg"
-      );
-      partida.puntuacion = partida.puntuacion + 3;
+      muestraLaCarta(model.tres);
       break;
     case 4:
-      muestraLaCarta(
-        "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/4_cuatro-copas.jpg"
-      );
-      partida.puntuacion = partida.puntuacion + 4;
+      muestraLaCarta(model.cuatro);
       break;
     case 5:
-      muestraLaCarta(
-        "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/5_cinco-copas.jpg"
-      );
-      partida.puntuacion = partida.puntuacion + 5;
+      muestraLaCarta(model.cinco);
       break;
     case 6:
-      muestraLaCarta(
-        "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/6_seis-copas.jpg"
-      );
-      partida.puntuacion = partida.puntuacion + 6;
+      muestraLaCarta(model.seis);
       break;
     case 7:
-      muestraLaCarta(
-        "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/7_siete-copas.jpg"
-      );
-      partida.puntuacion = partida.puntuacion + 7;
+      muestraLaCarta(model.siete);
       break;
     case 10:
-      muestraLaCarta(
-        "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/10_sota-copas.jpg"
-      );
-      partida.puntuacion = partida.puntuacion + 0.5;
+      muestraLaCarta(model.sota);
       break;
     case 11:
-      muestraLaCarta(
-        "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/11_caballo-copas.jpg"
-      );
-      partida.puntuacion = partida.puntuacion + 0.5;
+      muestraLaCarta(model.caballo);
       break;
     case 12:
-      muestraLaCarta(
-        "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/12_rey-copas.jpg"
-      );
-      partida.puntuacion = partida.puntuacion + 0.5;
+      muestraLaCarta(model.rey);
       break;
   }
 }
